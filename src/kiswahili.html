@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Voice Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+
+    <!-- Header -->
+    <header class="w-full bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-2xl font-semibold">LLM Voice Assistant</h1>
+        <nav class="space-x-4">            
+            <a class="text-xl font-semibold hover:text-indigo-300 transition duration-200" href="feedback.html">Give Feedback</a>
+            <a class="text-xl font-semibold hover:text-indigo-300 transition duration-200" href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <!-- Conversation Section -->
+    <section class="mt-8 w-full max-w-4xl px-4">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Conversation</h2>
+
+        <!-- Conversation Box -->
+        <div id="conversation-box" class="border rounded-lg bg-white shadow-md p-6 h-[60vh] overflow-y-auto">
+            <div id="messages" class="space-y-4">
+                <!-- Messages will be appended here -->
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="mt-4 flex items-center space-x-4">
+            <input type="text" id="question-input" 
+                   class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                   placeholder="uliza swali yako hapo...">
+            <button id="ask-btn" 
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                Uliza AI
+            </button>
+        </div>
+    </section>
+
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const questionInput = document.getElementById('question-input');
+        const askBtn = document.getElementById('ask-btn');
+
+        // Function to append messages to the conversation box
+        const appendMessage = (message, type) => {
+            const colorClass = type === 'response' ? 'text-green-700' : 'text-black';
+            const messageHtml = `
+                <div class="flex items-start space-x-4">
+                    <div class="bg-gray-100 p-3 rounded-lg w-full">
+                        <p class="${colorClass} font-medium">${message}</p>
+                    </div>
+                </div>
+            `;
+            messagesDiv.innerHTML += messageHtml;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        };
+
+        // Function to send the query to the backend API
+        const queryAPI = async (question) => {
+            try {
+                const response = await fetch('http://127.0.0.1:8080/ai/query_db', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query_text: question }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                appendMessage(data.response, 'response');
+            } catch (error) {
+                console.error('Error:', error);
+                appendMessage('Failed to get a response from the server.', 'error');
+            }
+        };
+
+        // Handle question submission
+        askBtn.addEventListener('click', () => {
+            const question = questionInput.value.trim();
+            if (question) {
+                appendMessage(question, 'question');
+                queryAPI(question);
+                questionInput.value = ''; // Clear the input field
+            }
+        });
+    </script>
+
+</body>
+</html>

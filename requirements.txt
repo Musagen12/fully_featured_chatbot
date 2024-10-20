@@ -1,0 +1,16 @@
+azure-cognitiveservices-speech==1.41.1
+fastapi==0.115.2
+uvicorn==0.31.1
+websockets==13.1
+python-dotenv
+langchain_ollama
+fastapi
+langchain_community
+langchain
+uvicorn
+langchain_chroma
+pathlib
+langchain-ollama
+pypdf
+pathlib
+pydantic

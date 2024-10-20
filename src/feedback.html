@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize EmailJS
+            emailjs.init('xZ33d1QvSmtHidd3G');
+
+            const form = document.querySelector("form");
+            const outputDiv = document.getElementById("output");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Collect user input
+                const feedbackData = {
+                    feedback_type: document.querySelector("#feedback-type").value,
+                    message: document.querySelector("#message").value,
+                    user_email: document.querySelector("#email").value || "Not provided", // User's email
+                    address: document.querySelector("#address").value,
+                    city: document.querySelector("#city").value,
+                    zip_code: document.querySelector("#zip-code").value,
+                };
+
+                console.log("Feedback Data:", feedbackData); // Debugging line
+
+                // Display the collected data on the page
+                displayFeedback(feedbackData);
+
+                // Send email via EmailJS
+                emailjs.send("service_bb5rtpg", "template_b97i4lo", {
+                    feedback_type: feedbackData.feedback_type,
+                    message: feedbackData.message,
+                    user_email: feedbackData.user_email,
+                    address: feedbackData.address,
+                    city: feedbackData.city,
+                    zip_code: feedbackData.zip_code,
+                })
+                .then(function (response) {
+                    console.log("SUCCESS", response);
+                    alert("Your feedback has been sent successfully!");
+                }, function (error) {
+                    console.error("FAILED", error);
+                    alert("Sorry, there was an error sending your feedback.");
+                });
+            });
+
+            // Function to display feedback data dynamically
+            function displayFeedback(data) {
+                outputDiv.innerHTML = `
+                    <h3 class="text-xl font-semibold mt-8 text-indigo-600">Your Feedback</h3>
+                    <p><strong>Type:</strong> ${data.feedback_type}</p>
+                    <p><strong>Message:</strong> ${data.message}</p>
+                    <p><strong>Email:</strong> ${data.user_email}</p>
+                    <p><strong>Address:</strong> ${data.address}</p>
+                    <p><strong>City:</strong> ${data.city}</p>
+                    <p><strong>Zip Code:</strong> ${data.zip_code}</p>
+                `;
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <header class="w-full bg-indigo-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-2xl font-semibold">LLM Voice Assistant</h1>
+        <nav class="space-x-4">
+            <a class="text-xl font-semibold hover:text-indigo-300 transition duration-200" href="index.html">Home</a>        
+        </nav>
+    </header>
+
+    <form class="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
+        <div class="space-y-8">
+            <div class="border-b border-gray-300 pb-6">
+                <h2 class="text-2xl font-semibold text-gray-900">Feedback and Complaints</h2>
+                <p class="mt-2 text-sm text-gray-600">Please provide your feedback or complaint below.</p>
+
+                <div class="mt-6 grid grid-cols-1 gap-y-4">
+                    <div>
+                        <label for="feedback-type" class="block text-sm font-medium text-gray-900">Type</label>
+                        <select id="feedback-type" class="block w-full rounded-md border border-gray-300 bg-gray-50 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option>Feedback</option>
+                            <option>Complaint</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-900">Message</label>
+                        <textarea id="message" rows="4" class="block w-full rounded-md border border-gray-300 bg-gray-50 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter your feedback or complaint..."></textarea>
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-900">Address</label>
+                        <input id="address" type="text" class="block w-full rounded-md border border-gray-300 bg-gray-50 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="123 Main St">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-gray-900">City</label>
+                            <input id="city" type="text" class="block w-full rounded-md border border-gray-300 bg-gray-50 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="City">
+                        </div>
+
+                        <div>
+                            <label for="zip-code" class="block text-sm font-medium text-gray-900">Zip Code</label>
+                            <input id="zip-code" type="text" class="block w-full rounded-md border border-gray-300 bg-gray-50 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Zip Code">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-900">Email (optional)</label>
+                        <input id="email" type="email" class="block w-full rounded-md border border-gray-300 bg-gray-50 py-2 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="you@example.com">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <button type="submit" class="w-full inline-flex justify-center rounded-md bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Submit Feedback
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Output Section to Display Feedback -->
+    <div id="output" class="mt-10 max-w-lg w-full bg-white rounded-lg shadow-lg p-6"></div>
+
+</body>
+</html>
